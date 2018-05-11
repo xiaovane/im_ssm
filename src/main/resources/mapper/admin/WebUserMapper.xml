@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin.dao.WebUserDao">
+
+	<resultMap type="WebUser" id="WebUserResult">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="summary" column="summary"/>
+		<result property="releaseDate" column="releaseDate"/>
+		<result property="clickHit" column="clickHit"/>
+		<result property="replyHit" column="replyHit"/>
+		<result property="content" column="content"/>
+		<result property="keyWord" column="keyWord"/>
+		
+		<association property="InfoType" column="type_id" select="admin.dao.InfoTypeDao.getById">
+		</association>
+	</resultMap>
+	
+
+	
+	<select id="listWebUser" parameterType="Map" resultMap="WebUserResult">
+        SELECT * FROM t_WebUser
+        <where>
+            <if test="title!=null and title!=''">
+                and title like "%"#{title}"%"
+            </if>
+            <if test="typeId!=null and typeId!=''">
+                and type_id=#{typeId}
+            </if>
+            <if test="releaseDateStr!=null and releaseDateStr!=''">
+                and DATE_FORMAT(releaseDate,'%Y年%m月')=#{releaseDateStr}
+            </if>
+        </where>
+        ORDER BY releaseDate DESC
+        <if test="start!=null and end!=null">
+            limit #{start},#{end}
+        </if>
+	</select>
+
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT COUNT(*) FROM t_WebUser
+        <where>
+            <if test="title!=null and title!=''">
+                and title like "%"#{title}"%"
+            </if>
+            <if test="typeId!=null and typeId!=''">
+                and type_id=#{typeId}
+            </if>
+            <if test="releaseDateStr!=null and releaseDateStr!=''">
+                and DATE_FORMAT(releaseDate,'%Y年%m月')=#{releaseDateStr}
+            </if>
+        </where>
+    </select>
+
+	
+	<select id="getWebUserByTypeId" parameterType="Integer" resultType="Integer">
+		select count(*) from t_WebUser where type_id=#{typeId}
+	</select>
+
+	<insert id="saveWebUser" parameterType="WebUser" keyProperty="id" useGeneratedKeys="true">
+		insert into t_WebUser(title,summary,releaseDate,clickHit,replyHit,content,keyWord,type_id) VALUES (#{title},#{summary},now(),0,0,#{content},#{keyWord},#{InfoType.id})
+	</insert>
+
+	<update id="updateWebUser" parameterType="WebUser">
+		update t_WebUser
+        <set>
+            <if test="title!=null and title!=''">
+                title=#{title},
+            </if>
+            <if test="summary!=null and summary!=''">
+                summary=#{summary},
+            </if>
+            <if test="content!=null and content!=''">
+                content=#{content},
+            </if>
+            <if test="InfoType.id!=null">
+                type_id=#{InfoType.id},
+            </if>
+            <if test="clickHit!=null">
+                clickHit=#{clickHit},
+            </if>
+            <if test="replyHit!=null">
+                replyHit=#{replyHit},
+            </if>
+            <if test="keyWord!=null and keyWord!=''">
+                keyWord=#{keyWord},
+            </if>
+        </set>
+        where id=#{id}
+	</update>
+
+    <delete id="deleteWebUser" parameterType="java.lang.Integer">
+        DELETE FROM t_WebUser
+        where id=#{id}
+    </delete>
+
+    <select id="getById" parameterType="java.lang.Integer" resultMap="WebUserResult">
+        SELECT * from t_WebUser where id=#{id}
+    </select>
+
+    <select id="getPrevWebUser" parameterType="Integer" resultMap="WebUserResult">
+        SELECT * FROM t_WebUser WHERE id&lt;#{id} ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="getNextWebUser" parameterType="Integer" resultMap="WebUserResult">
+        SELECT * FROM t_WebUser WHERE id&gt;#{id} ORDER BY id ASC LIMIT 1
+    </select>
+</mapper> 

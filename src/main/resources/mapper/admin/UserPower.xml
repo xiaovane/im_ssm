@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin.dao.UserAdminDao">
+	<!-- 返回结果映射 如果开启驼峰命名转换且命名规范该段代码可以不写 因为配置别名 所以type属性使用的是mybatis-conf中的别名 -->
+	<resultMap type="AdminPower" id="AdminPowerResult">
+		<id property="id" column="id" />
+		<result property="userName" column="userName" />
+		<result property="isAdmin" column="isAdmin" />
+		<result property="menu" column="menu" />
+	</resultMap>
+	
+	<!-- 给表里插入权限模块数据 -->
+	<insert id="addMenu" >
+		insert into t_adminPower(userName,menu)values(#{userName},#{menu})
+	</insert>
+	
+	<!-- 判断是否存在记录 -->
+	<select id="isExitRecord" parameterType="AdminPower" resultType="Integer">
+	   select count(1) from t_adminPower where userName=#{userName}
+	</select>
+	
+	<!-- 判断是否存在记录 -->
+	<delete id="delteRecord">
+	   delete from t_adminPower where userName=#{userName}
+	</delete>
+	
+	<!-- 获取当前用户的权限列表 -->
+	<select id="getMenu" parameterType="AdminPower" resultMap="AdminPowerResult" >
+	   select * from t_adminPower where userName=#{userName}
+	</select>
+
+</mapper>

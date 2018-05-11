@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.vote.dao.VoteDao">
+
+	<resultMap type="VoteChoice" id="VoteChoiceResult">
+		<id property="id" column="id" />
+		<result property="choiceId" column="choiceId" />
+		<result property="voteId" column="voteId" />
+		<result property="choiceValue" column="choiceValue" />
+	</resultMap>
+
+	<!-- api begin -->
+	<!-- 创建投票选项 -->
+	<insert id="createVoteChoice" parameterType="VoteChoice">
+		insert into
+		t_vote_choice(choiceId,voteId,choiceValue)
+		values(#{choiceId},#{voteId},#{choiceValue});
+	</insert>
+
+	<!-- admin begin -->
+	<!-- 获取投票选项列表 -->
+	<select id="voteItem" parameterType="VoteChoice" resultMap="VoteChoiceResult">
+		select * from t_vote_choice where voteId=#{voteChoice.voteId}
+
+		<if test="voteChoice.choiceValue!=null and voteChoice.choiceValue!=''">
+			and choiceValue like "%"#{voteChoice.choiceValue}"%"
+		</if>
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+	<!-- 获取投票选项总数 -->
+	<select id="getvoteItemTotal" parameterType="Map" resultType="Long">
+		select count(1) from t_vote_choice where voteId=#{voteChoice.voteId}
+
+		<if test="voteChoice.choiceValue!=null and voteChoice.choiceValue!=''">
+			and choiceValue like "%"#{voteChoice.choiceValue}"%"
+		</if>
+	</select>
+
+	<!-- 保存vote选项 -->
+	<update id="ItemSave" parameterType="VoteChoice">
+		update t_vote_choice set choiceValue=#{choiceValue} where
+		choiceId=#{choiceId} and voteId=#{voteId}
+	</update>
+	
+	<!-- 统计获取投票选项总数 -->
+	<select id="getvoteItemStatic" parameterType="Map" resultType="Long">
+		select count(1) from t_vote_choice where voteId=#{voteItemStatic.voteId}
+	</select>
+</mapper> 

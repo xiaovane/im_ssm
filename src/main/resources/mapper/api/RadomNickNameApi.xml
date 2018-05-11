@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.InfoListDao">
+
+	<resultMap type="RadomNickName" id="RadomNickNameResult">
+		<id property="id" column="id" />
+		<result property="guid" column="guid" />
+		<result property="nickName" column="nickName" />
+		<result property="image" column="image" />
+
+	</resultMap>
+	<!-- api begin -->
+	<!-- 获取随机图片列表 -->
+	<select id="RadomNickName" resultMap="RadomNickNameResult">
+		select * from
+		t_randomnickname
+		order by rand() limit 1
+	</select>
+
+	<!-- admin begin -->
+	<!-- 获取随机图片列表 -->
+	<select id="radomImg" parameterType="Map" resultMap="RadomNickNameResult">
+		select *
+
+		from t_randomnickname where
+
+		nickName like
+		"%"#{radomNickName.nickName}"%"
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 随机图片的总数 -->
+	<select id="getRadomImgTotal" parameterType="Map" resultType="Long">
+		select count(1)
+
+		from t_randomnickname where
+
+		nickName like
+		"%"#{radomNickName.nickName}"%"
+	</select>
+
+	<!-- 获取随机图片详细 -->
+	<select id="radomImgDetail" parameterType="RadomNickName"
+		resultMap="RadomNickNameResult">
+		select *
+		from t_randomnickname where
+		guid=#{guid}
+
+	</select>
+
+	<!-- 修改随机图片 -->
+	<update id="radomImgUpdate" parameterType="RadomNickName">
+		update
+		t_randomnickname
+		set nickName=#{nickName},
+		image=#{image} where
+		guid=#{guid}
+	</update>
+
+	<!-- 新增随机图片 -->
+	<insert id="radomImgAdd" parameterType="RadomNickName">
+		insert into
+		t_randomnickname(guid,nickName,image)
+		values(#{guid},#{nickName},#{image})
+	</insert>
+
+	<!-- 判断昵称是否重复 -->
+	<select id="isSameNickName" parameterType="RadomNickName"
+		resultType="Integer">
+		select count(1)
+
+		from t_randomnickname where
+
+		nickName
+		=#{nickName}
+	</select>
+
+	<!-- 批量删除随机昵称和图片 -->
+	<delete  id="radomImgDelete" parameterType="RadomNickName"  >
+	   delete from t_randomnickname where id=#{id}
+	</delete>
+</mapper> 

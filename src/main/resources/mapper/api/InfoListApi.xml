@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.InfoListDao">
+
+	<resultMap type="InfoList" id="InfoListResult">
+		<id property="id" column="id" />
+		<result property="infoId" column="infoId" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="url" column="url" />
+		<result property="image" column="image" />
+		<result property="type" column="type" />
+	</resultMap>
+	<!-- api begin -->
+	<!-- 信息列表 -->
+	<select id="clientInfoList" parameterType="Map" resultMap="InfoListResult">
+		select infoId,title,url,image,type,(select count(1) from t_infoList )
+		total from t_infoList
+		where type=#{type} limit #{pageIndex},#{pageSize}
+	</select>
+
+	<!-- 信息详细列表 -->
+	<select id="clientInfoDetail" parameterType="String" resultMap="InfoListResult">
+		select * from t_infoList
+		where infoId=#{infoId}
+	</select>
+
+	<!-- admin begin -->
+	<!-- 获取常见问题列表 -->
+	<select id="baseQuestion" parameterType="Map" resultMap="InfoListResult">
+		select *,CASE type
+		when 1 then '投诉列表'
+		when 2 then '常见问题'
+		END
+		infoListType
+
+		from t_infoList where
+
+		title like
+		"%"#{infoList.title}"%"
+
+		and type =
+		#{infoList.type}
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 常见问题的总数 -->
+	<select id="getBaseQuestionTotal" parameterType="Map"
+		resultType="Long">
+		select count(1)
+
+		from t_infoList where
+
+		title like
+		"%"#{infoList.title}"%"
+
+		and type =
+		#{infoList.type}
+	</select>
+
+	<!-- 获取常见问题详细 -->
+	<select id="baseQuestionDetail" parameterType="InfoList"
+		resultMap="InfoListResult">
+		select *
+		from t_infoList where infoId=#{infoId}
+
+	</select>
+
+	<!-- 修改常见问题 -->
+	<update id="baseQuestionUpdate" parameterType="InfoList">
+		update t_infoList
+		set title=#{title},
+		content=#{content},type=#{type} where
+		infoId=#{infoId}
+	</update>
+	
+	<!-- 新增常见问题 -->
+	<insert id="baseQuestionAdd" parameterType="InfoList">
+		insert into
+		t_infoList(infoId,title,content,url,image,type)
+		values(#{infoId},#{title},#{content},#{url},#{image},#{type})
+	</insert>
+	
+	<!-- 判断昵称是否重复 -->
+	<select id="isSameTitle" parameterType="InfoList" resultType="Integer">
+		select count(1)
+
+		from t_infoList where
+
+		title =#{title}
+	</select>
+	
+	<!-- 批量删除常见问题 -->
+	<delete  id="baseQuestionDelete" parameterType="InfoList"  >
+	   delete from t_infoList where id=#{id}
+	</delete>
+	
+</mapper> 

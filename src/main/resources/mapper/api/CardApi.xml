@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.card.dao.CardDao">
+
+	<resultMap type="Card" id="CardResult">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="money" column="money" />
+		<result property="startTime" column="startTime" />
+		<result property="endTime" column="endTime" />
+		<result property="status" column="status" />
+		<result property="num" column="num" />
+		<result property="title" column="title" />
+		<result property="description" column="description" />
+		<result property="cardId" column="cardId" />
+		<result property="title" column="title" />
+		<result property="lookStatus" column="lookStatus" />
+		<result property="reason" column="reason" />
+		<result property="city" column="city" />
+
+	</resultMap>
+	<!-- api begin -->
+	<!-- 创建卡券 -->
+	<insert id="createCard" parameterType="Card">
+		insert into
+		t_card(userId,money,startTime,endTime,num,title,description,cardId,city,createTime)
+		values(#{userId},#{money},#{startTime},#{endTime},#{num},#{title},#{description},#{cardId},#{city},#{createTime})
+	</insert>
+
+	<!-- 查询card列表信息 -->
+	<select id="slectCardList" parameterType="Map" resultMap="CardResult">
+		select
+		* from t_card where userId=#{userId} and lookStatus=9 and status=1
+		limit #{pageIndex},#{pageSize}
+	</select>
+
+	<!-- 查询card详细信息 -->
+	<select id="slectCardDetail" parameterType="Card" resultMap="CardResult">
+		select * from t_card where cardId=#{cardId} and userId=#{userId} and
+		lookStatus=9 and status=1
+	</select>
+
+	<!-- 查询card的信息是否过期 -->
+	<select id="selectCard" parameterType="CardInfo" resultMap="CardResult">
+		select * from t_card where cardId=#{cardId} and lookStatus=9 and
+		status=1
+		and endTime>now() and now()>startTime and num>0
+	</select>
+
+
+	<!-- 别人领取卡券后，数据自动减一 -->
+	<update id="deleteOneNum" parameterType="Card">
+		update t_card set num =
+		num-1 where cardId=#{cardId}
+	</update>
+
+	<!-- 获取全部卡券数据 -->
+	<select id="getAllList" parameterType="Map" resultMap="CardResult">
+		SELECT *
+		from t_card WHERE id in(SELECT max(id) from t_card  where  lookStatus=9 and status=1
+		and endTime>now() and now()>startTime and
+		num>0 GROUP BY userId )
+		and lookStatus=9 and status=1
+		and endTime>now() and now()>startTime and
+		num>0  and city=#{city} limit
+		#{pageIndex},#{pageSize}
+	</select>
+
+	<!-- admin begin -->
+	<!-- 获取卡券列表 -->
+	<select id="cardInfoList" parameterType="Map" resultMap="CardResult">
+		SELECT *,
+		CASE c.status WHEN 1 THEN '启用' WHEN 0 THEN '禁用' END
+		cardStatus,
+		CASE c.lookStatus WHEN 9 THEN '审核通过' WHEN -1 THEN '退回' WHEN
+		2 THEN '待审核'
+		END cardLook
+		from t_card c,t_userinfo u where
+		u.userId=c.userId
+		and c.title like"%"#{card.title}"%"  and c.lookStatus = #{card.lookStatus} and #{card.endTime}>c.createTime and c.createTime>#{card.startTime}
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select count(1)  from t_card c,t_userinfo u where
+		u.userId=c.userId and c.title like"%"#{card.title}"%"  and c.lookStatus = #{card.lookStatus} and #{card.endTime}>c.createTime and c.createTime>#{card.startTime}
+	</select>
+	<!-- 获取卡券详情 -->
+	<select id="cardInfoDetail" parameterType="Card" resultMap="CardResult">
+		select * from t_card where cardId=#{cardId}
+	</select>
+	<!-- 修改卡券 -->
+	<update id="cardInfoModify" parameterType="Card">
+		update t_card set
+		money=#{money},startTime=#{startTime},endTime=#{endTime},title=#{title},num=#{num},description=#{description}
+		where cardId=#{cardId}
+	</update>
+	<!-- 审核 -->
+	<update id="cardInfoLook" parameterType="Card">
+		update t_card set
+		reason=#{reason} and lookStatus=#{lookStatus}
+		where cardId=#{cardId}
+	</update>
+</mapper> 

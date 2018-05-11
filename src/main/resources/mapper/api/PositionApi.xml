@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.PositionDao">
+
+	<resultMap type="Position" id="PositionResult">
+		<id property="id" column="id" />
+		<result property="provinceId" column="provice_id" />
+		<result property="provinceName" column="provice_name" />
+		<result property="cityId" column="city_id" />
+		<result property="cityName" column="city_name" />
+		<result property="countyId" column="county_id" />
+		<result property="countyName" column="county_name" />
+		<result property="townId" column="town_id" />
+		<result property="townName" column="town_name" />
+		<result property="xiaoQuId" column="xiaoqu_id" />
+		<result property="xiaoQuName" column="xiaoqu_name" />
+
+	</resultMap>
+	<!-- api begin -->
+	<!-- 获取小区信息 -->
+	<select id="clientPositonXiaoQu" parameterType="Map" resultMap="PositionResult">
+		select xiaoqu_id,xiaoqu_name from t_position_xiaoqu where
+		county_id=#{countyId}
+	</select>
+	<!-- 模糊查询小区信息 -->
+	<select id="clientSearchXiaoQu" parameterType="Map" resultMap="PositionResult">
+		select xiaoqu_id,xiaoqu_name from t_position_xiaoqu where
+		county_id=#{countyId} and xiaoqu_name like "%"#{xiaoQuName}"%"
+	</select>
+	<!-- admin begin -->
+	<!-- 获取小区列表 -->
+	<select id="positionList" resultMap="PositionResult"
+		parameterType="Map">
+		SELECT x.id, p.provice_name,c.city_name,cc.county_name,x.xiaoqu_name from t_position_province p,t_position_city
+		c,t_position_county cc
+
+		,t_position_xiaoqu x where
+		p.provice_id=c.province_id and c.city_id=cc.city_id and
+		cc.county_id=
+		x.county_id
+
+		and x.xiaoqu_name like
+		"%"#{position.xiaoQuName}"%"
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取小区信息总数 -->
+	<select id="getTotal" resultType="Long" parameterType="Map">
+		SELECT
+		count(1) from t_position_province p,t_position_city
+		c,t_position_county cc
+
+		,t_position_xiaoqu x where
+		p.provice_id=c.province_id and c.city_id=cc.city_id and
+		cc.county_id=
+		x.county_id
+		and x.xiaoqu_name like
+		"%"#{position.xiaoQuName}"%"
+
+	</select>
+
+	<!-- 获取小区详细信息 -->
+	<select id="positionContent" resultMap="PositionResult"
+		parameterType="Position">
+		SELECT * from t_position_province p,t_position_city
+		c,t_position_county cc
+
+		,t_position_xiaoqu x where
+		p.provice_id=c.province_id and c.city_id=cc.city_id and
+		cc.county_id=
+		x.county_id and x.xiaoqu_id=#{xiaoQuId}
+	</select>
+	
+	<!-- 新增小区信息 -->
+	<insert id="positionAdd" parameterType="Position">
+	 insert into t_position_xiaoqu(county_id,xiaoqu_id,xiaoqu_name) values(#{countyId},#{xiaoQuId},#{xiaoQuName})
+	</insert>
+	
+	<!-- 修改小区信息 -->
+	<update id="positionModify" parameterType="Position">
+	 update t_position_xiaoqu set xiaoqu_name=#{xiaoQuName},county_id=#{countyId} where xiaoqu_id=#{xiaoQuId}
+	</update>
+	
+	<!-- 批量删除小区信息 -->
+	<delete id="positionDelete" parameterType="Position">
+	  delete from t_position_xiaoqu where id=#{id}
+	</delete>
+	
+	<select id="isExitTitle" parameterType="Position" resultType="Integer">
+	  select count(1) from t_position_xiaoqu where xiaoqu_name=#{xiaoQuName} and  county_id=#{countyId}
+	</select>
+
+</mapper> 

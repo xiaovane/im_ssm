@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.UserApiDao">
+
+	<resultMap type="UserInfo" id="UserInfoResult">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="userImage" column="userImage" />
+		<result property="mobile" column="mobile" />
+		<result property="nickName" column="nickName" />
+		<result property="pwd" column="pwd" />
+		<result property="provice" column="provice" />
+		<result property="dcity" column="Dcity" />
+		<result property="xcity" column="xcity" />
+		<result property="qcity" column="qcity" />
+		<result property="village" column="village" />
+		<result property="building" column="building" />
+		<result property="unit" column="unit" />
+		<result property="room" column="room" />
+		<result property="status" column="status" />
+		<result property="thumb" column="thumb" />
+		<result property="device" column="device" />
+		<result property="loginTime" column="loginTime" />
+		<result property="useType" column="useType" />
+		<result property="isHidden" column="isHidden" />
+		<result property="user" column="user" />
+
+	</resultMap>
+	<!-- begin api -->
+	<!-- 判断用户id是否存在 -->
+	<select id="inCountUser" parameterType="String" resultType="Integer">
+		SELECT count(*) FROM t_userInfo
+		<where>
+			<if test="_parameter!=null and _parameter!=''">
+				userId = #{userId}
+			</if>
+
+		</where>
+
+	</select>
+
+	<!-- 判断手机号是否存在 -->
+	<select id="inCountMobile" parameterType="String" resultType="Integer">
+		SELECT count(*) FROM t_userInfo
+		<where>
+			<if test="_parameter!=null and _parameter!=''">
+				mobile=#{mobile}
+			</if>
+		</where>
+
+	</select>
+
+	<!-- 判断小区信息是否注册 -->
+	<select id="inCountHome" resultType="Integer" parameterType="UserInfo">
+		SELECT count(*) FROM t_userInfo
+		<where>
+			provice=#{provice}
+			and dcity=#{dcity}
+			and xcity=#{xcity}
+			and
+			qcity=#{qcity}
+			and village=#{village}
+			and building=#{building}
+			and
+			unit=#{unit}
+			and room=#{room}
+		</where>
+
+	</select>
+
+
+	<!-- 判断用户登录是否正确 -->
+	<select id="inCountUserLogin" resultType="Integer"
+		parameterType="UserInfo">
+		SELECT count(*) FROM t_userInfo
+		<where>
+			( userId=#{userId}
+			or mobile=#{mobile})
+			and pwd=#{pwd}
+		</where>
+
+	</select>
+
+	<!-- 判断用户登设备是否在同一台设备上 -->
+	<select id="inCountDevice" resultType="Integer" parameterType="UserInfo">
+		SELECT count(*) FROM t_userInfo
+		<where>
+			( userId=#{userId}
+			or mobile=#{mobile})
+			and pwd=#{pwd}
+			and
+			device=#{device}
+		</where>
+
+	</select>
+
+	<!-- 用户注册 -->
+	<insert id="registUser" parameterType="UserInfo" keyProperty="id"
+		useGeneratedKeys="true">
+		insert into
+		t_UserInfo(userId,mobile,nickName,provice,dcity,xcity,qcity,village,building,unit,room,useType,device,pwd,regist)
+		VALUES
+		(#{userId},#{mobile},#{nickName},#{provice},#{dcity},#{xcity},#{qcity},#{village},#{building},#{unit},#{room},#{useType},#{device},#{pwd},#{regist})
+	</insert>
+	
+	<!-- 补充用户信息 -->
+	<update id="registUpdate"  parameterType="UserInfo">
+	  update t_UserInfo set village=#{village},building=#{building},unit=#{unit} where userId=#{userId}
+	</update>
+
+	<!-- 登录成功后返回用户基本信息 -->
+	<select id="getUserInfoByUserId" resultType="UserInfo"
+		parameterType="UserInfo">
+		SELECT * FROM t_userInfo
+		<where>
+			userId=#{userId}
+			or mobile=#{mobile}
+		</where>
+
+	</select>
+
+	<!-- 判断原密码是否正确 -->
+	<select id="checkPwd" parameterType="UserInfo" resultType="Integer">
+		select count(1) from t_userInfo where userId=#{userId} and pwd=#{pwd}
+	</select>
+
+	<!-- 修改用户密码 -->
+	<update id="modifyPwd" parameterType="UserInfo">
+		update t_userInfo set pwd=#{pwd}
+		<where>
+			userId=#{userId}
+		</where>
+
+	</update>
+
+	<!-- 重置用户密码 -->
+	<update id="resetPwd" parameterType="UserInfo">
+		update t_userInfo set pwd=#{pwd}
+		<where>
+			mobile=#{mobile}
+		</where>
+
+	</update>
+
+	<!-- 修改用户昵称 -->
+	<update id="modifyNickName" parameterType="UserInfo">
+		update t_userInfo set nickName=#{nickName}
+		<where>
+			userId=#{userId}
+		</where>
+
+	</update>
+
+	<!-- 修改用户个人信息 -->
+	<update id="modifyPersonInfo" parameterType="UserInfo">
+		update t_userInfo set userImage=#{userImage}
+		<where>
+			userId=#{userId}
+		</where>
+
+	</update>
+
+	<!--搜索好友 -->
+	<select id="searchFriendList" parameterType="Map" resultMap="UserInfoResult">
+		select * from t_userInfo where userId = #{user} or mobile = #{mobile}
+		and userId != #{userId}
+	</select>
+
+	<!--搜索好友列表 -->
+	<select id="getFriendList" parameterType="UserInfo" resultMap="UserInfoResult">
+		select * from t_userInfo u,t_friend f where u.userId = f.friendId and
+		f.userId=#{userId} and f.blackStatus=0 order by f.isStar desc
+	</select>
+	
+	<!--搜索客服列表 -->
+	<select id="getKeFu" parameterType="UserInfo" resultMap="UserInfoResult">
+		select * from t_userInfo where useType=3 and  provice=#{provice}
+	</select>
+
+	<!-- 隐藏个人信息 -->
+	<update id="hiddenPersonInfo" parameterType="UserInfo">
+		update t_userInfo
+		set isHidden=1 where userId=#{userId}
+	</update>
+
+	<!-- 修改个人信息 -->
+	<update id="updatePersonInfo" parameterType="UserInfo">
+		update t_userInfo
+		set userImage=#{userImage} where userId=#{userId}
+	</update>
+	<!-- 判断手机号是否注册 -->
+	<select id="isMobile" parameterType="String" resultType="Integer">
+		select
+		count(1) from t_userInfo where mobile=#{mobile}
+	</select>
+	
+	<!-- 根据mobile获取userID -->
+	<select id="getUserId" parameterType="UserInfo" resultType="String">
+		select
+		userId from t_userInfo where mobile=#{mobile}
+	</select>
+	
+	<!-- 根据userId获取用户昵称 -->
+	<select id="getUserNickName" parameterType="String" resultType="String">
+		select
+		nickName from t_userInfo where userId=#{userId}
+	</select>
+	
+	<!-- 根据userId获取用户图片 -->
+	<select id="getUserImg" parameterType="String" resultType="String">
+		select
+		userImage from t_userInfo where userId=#{userId}
+	</select>
+    
+    <!-- 根据群id获取成员信息 -->
+    <select id="listUserInfoByGroupId" parameterType="String" resultMap="UserInfoResult">
+       select *  from t_userInfo u,t_group_users gu where gu.userId=u.userId and gu.groupId=#{groupId}
+    </select>
+
+	<!-- begin admin -->
+	<!-- 获取用户相关信息列表,分页 -->
+	<select id="listUserInfo" parameterType="Map" resultMap="UserInfoResult">
+		select *,CASE usetype
+		when 1 then '业主'
+		when 2 then '便民服务'
+		END userType,
+		CASE status
+		when 0 then '禁用'
+		when 1 then '启用'
+		when 2 then '禁言'
+		when 3 then
+		'下线'
+		END userStatus,
+		CASE thumb
+		when 0 then '否'
+		when 1 then '是'
+		END
+		userThumb from t_userInfo where
+
+		userId like "%"#{userInfo.userId}"%"
+
+		and mobile like "%"#{userInfo.mobile}"%"
+
+		and nickName like
+		"%"#{userInfo.nickName}"%"
+
+		and useType = #{userInfo.useType}
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取用户列表的总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select
+		count(1) from t_userInfo
+		where
+
+		userId like "%"#{userInfo.userId}"%"
+
+		and mobile like "%"#{userInfo.mobile}"%"
+
+		and nickName like
+		"%"#{userInfo.nickName}"%"
+
+		and useType = #{userInfo.useType}
+	</select>
+	<!-- 获取好友列表 -->
+	<select id="listFriendInfo" parameterType="Map" resultMap="UserInfoResult">
+		select *,CASE usetype
+		when 1 then '业主'
+		when 2 then '便民服务'
+		END userType,
+		CASE status
+		when 0 then '禁用'
+		when 1 then '启用'
+		when 2 then '禁言'
+		when 3 then
+		'下线'
+
+		END userStatus,
+		CASE thumb
+		when 0 then '否'
+		when 1 then '是'
+		END
+		userThumb from
+		t_userInfo u,t_friend f
+		where u.userId=f.friendId and
+		f.userId=#{user.userId} and f.blackStatus=#{user.blackStatus}
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取好友数量 -->
+	<select id="getFriendTotal" parameterType="Map" resultType="Long">
+		select
+		count(1) from t_friend
+		where userId=#{user.userId} and
+		blackStatus=#{user.blackStatus}
+	</select>
+
+	<!-- 用户禁用和启用 -->
+	<update id="userDeac" parameterType="UserInfo">
+		update t_userInfo set
+		status=#{status} where userId=#{userId}
+	</update>
+
+	<!-- 获取群成员列表 -->
+	<select id="listGroupInfo" parameterType="Map" resultMap="UserInfoResult">
+		select *,CASE usetype
+		when 1 then '业主'
+		when 2 then '便民服务'
+		END userType,
+		CASE u.status
+		when 0 then '禁用'
+		when 1 then '启用'
+		when 2 then '禁言'
+		when 3
+		then
+		'下线'
+
+		END userStatus,
+		CASE thumb
+		when 0 then '否'
+		when 1 then '是'
+		END
+		userThumb from
+		t_userInfo u,t_group_users g
+		where u.userId=g.userId and
+		g.groupId=#{group.groupId} and g.status=#{group.status}
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取群成员数量 -->
+	<select id="getGroupTotal" parameterType="Map" resultType="Long">
+		select
+		count(1) from t_group_users
+		where groupId=#{group.groupId} and
+		status=#{group.status}
+	</select>
+</mapper> 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.UserApiDao">
+
+	<resultMap type="Token" id="TokenResult">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="token" column="token" />
+	</resultMap>
+	
+	<!-- 插入token -->
+	<insert id="setToken" parameterType="Map" >
+	  insert into t_token(userId,token) values(#{userId},#{token})
+	</insert>
+	
+	<!-- 获取token -->
+	<select id="getToken" parameterType="String" resultType="String">
+	  select token from t_token where userId=#{userId}
+	</select>
+	
+	<!-- 更新token -->
+	<update id="updateToken" parameterType="Map" >
+	  update t_token set token=#{token} where userId=#{userId}
+	</update>
+</mapper> 

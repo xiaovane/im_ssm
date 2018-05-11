@@ -1,0 +1,93 @@
+@CHARSET "UTF-8";
+/**
+ * @后台共用css
+ * @author：whai
+ * @version 1.0
+ */
+body, div, ul, li, div, tr, td, span, lable, select, option, input, a {
+	font-family: "microsoft yahei";
+	font-size: 14px !important;
+}
+
+td {
+	height: 40px;
+	line-height: 40px;
+}
+
+.tb-span {
+	height: 50px;
+	line-height: 50px;
+}
+
+.optionOpr {
+	width: 80px;
+}
+
+ul, li {
+	list-style: none;
+}
+
+.mainLeftNav {
+	height: 60px;
+	background-color: #2e6589;
+	border: none;
+}
+
+.mainLeftTable {
+	color: #fff !important;
+	width: 100%;
+	padding-top: 8px;
+}
+
+.mainNav {
+	width: 180px;
+	border-bottom: #fff 1px dotted;
+}
+
+.footer {
+	height: 35px;
+	padding: 5px;
+	color: #666;
+}
+
+.comomLeft {
+	margin-left: -30px;
+}
+
+.h1-class {
+	font-size: 26px;
+	font-weight: bold;
+	color: #ff6600;
+}
+
+.h2-class {
+	font-size: 24px;
+	font-weight: bold;
+	font-family: "宋体"
+}
+
+select {
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	background-color: #fff;
+	/*设置箭头*/
+	background: url("http://ourjs.github.io/static/2015/arrow.png")
+		no-repeat scroll right center transparent;
+	padding-right: 20px;
+	color: #666;
+	border: 1px solid #999;
+}
+
+/*兼容ie样式*/
+select::-ms-expand {
+	display: none;
+}
+
+.boderAll {
+	border: 0
+}
+
+.hidden{
+	display:none !important;
+}

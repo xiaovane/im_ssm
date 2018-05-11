@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.GroupApiDao">
+	<resultMap type="GroupGroup" id="GroupGroupResult">
+		<id property="id" column="id" />
+		<result property="topGroupId" column="topGroupId" />
+		<result property="groupId" column="groupId" />
+	</resultMap>
+
+	<!-- 组建群与群之间的关系 -->
+	<insert id="linkGroup2" parameterType="GroupGroup" >
+		insert into
+		t_group_group(topgroupId,groupId)
+		VALUE
+		(#{topGroupId},#{groupId})
+	</insert>
+	
+</mapper> 

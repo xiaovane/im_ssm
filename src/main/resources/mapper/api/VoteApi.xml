@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.vote.dao.VoteDao">
+
+	<resultMap type="Vote" id="VoteResult">
+		<id property="id" column="id" />
+		<result property="createId" column="createId" />
+		<result property="title" column="title" />
+		<result property="startTime" column="startTime" />
+		<result property="endTime" column="endTime" />
+		<result property="status" column="status" />
+		<result property="voteId" column="voteId" />
+		<result property="groupId" column="groupId" />
+		<result property="createTime" column="createTime" />
+	</resultMap>
+
+	<!-- api begin -->
+	<!-- 创建投票 -->
+	<insert id="ctrateVote" parameterType="Vote">
+		insert into
+		t_vote(createId,title,startTime,endTime,voteId,groupId,createTime)
+		values(#{createId},#{title},#{startTime},#{endTime},#{voteId},#{groupId},#{createTime});
+	</insert>
+
+	<!-- 获取创建vote的列表 -->
+	<select id="voteInfoList" parameterType="Vote" resultMap="VoteResult">
+		select
+		* from t_vote where groupId=#{groupId} limit #{pageIndex},#{pageSize}
+	</select>
+
+	<!-- 判断投票是否过期 -->
+	<select id="selectVoteIs" parameterType="Vote" resultType="Integer">
+		select count(1) from t_vote where voteId=#{voteId} and now()>startTime
+		and endTime>now()
+	</select>
+
+	<!-- 判断投票是否存在 -->
+	<select id="isExitVote" parameterType="Vote" resultType="Integer">
+		select
+		count(1) from t_vote where title=#{title} and now()>startTime
+		and
+		endTime>now()
+	</select>
+	<!-- admin begin -->
+	<!--vote列表 -->
+	<select id="voteInfoListAdmin" parameterType="Map" resultMap="VoteResult">
+		SELECT *, case v.status when 1 then '启用' when 0 then '未启用' end
+		voteStatus from t_vote v,t_group_users gu,t_userinfo u ,t_groupinfo g
+		where v.createid=gu.userid and gu.groupid=g.groupid and
+		gu.userid=u.userid and v.voteType=#{vote.voteType}
+		and v.title like
+		"%"#{vote.title}"%"
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!--vote总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		SELECT
+		count(1) FROM t_vote where voteType=#{vote.voteType}
+		and title like
+		"%"#{vote.title}"%"
+
+	</select>
+
+	<!-- 获取vote详细信息 -->
+	<select id="voteInfoDetail" parameterType="Vote" resultMap="VoteResult">
+		SELECT *, case v.status when 1 then '启用' when 0 then '未启用' end
+		voteStatus from t_vote v,t_group_users gu,t_userinfo u ,t_groupinfo g
+		where v.createid=gu.userid and gu.groupid=g.groupid and
+		gu.userid=u.userid and v.voteId=#{voteId}
+	</select>
+
+	<!-- vote修改 -->
+	<update id="voteInfoModify" parameterType="Vote">
+		update t_vote set
+		title=#{title},startTime=#{startTime},endTime=#{endTime}
+		where
+		voteId=#{voteId}
+	</update>
+
+	<!-- 获取整个投票 列表 -->
+	<select id="getVoteResultList" parameterType="Map" resultMap="VoteResult">
+		select * from t_vote where voteType=2 and now()> endtime
+		AND
+		date_sub(endtime,interval
+		-3 day)>NOW()
+	</select>
+</mapper> 

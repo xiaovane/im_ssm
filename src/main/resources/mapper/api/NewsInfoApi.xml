@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.infocapture.dao.NewsInfoDao">
+
+	<resultMap type="NewsInfo" id="NewsInfoResult">
+		<id property="id" column="id" />
+		<result property="infoGuid" column="infoGuid" />
+		<result property="title" column="title" />
+		<result property="url" column="url" />
+		<result property="content" column="content" />
+		<result property="infoDate" column="infoDate" />
+		<result property="author" column="author" />
+		<result property="zhuanZai" column="zhuanZai" />
+		<result property="categoryNum" column="categoryNum" />
+		<result property="categoryName" column="categoryName" />
+		<result property="url" column="url" />
+		
+	</resultMap>
+
+	<!-- api begin -->
+	<!-- 信息抓取插入数据库 -->
+	<insert id="addNewsInfo" parameterType="NewsInfo">
+		insert
+		t_NewsInfo(infoGuid,title,infoDate,zhuanZai,categoryNum,url,categoryName,author)
+		values(#{infoGuid},#{title},#{infoDate},#{zhuanZai},#{categoryNum},#{url},#{categoryName},#{author})
+	</insert>
+	
+	<!-- 信息抓取插入数据库 -->
+	<insert id="addNewsDetail" parameterType="NewsInfo">
+		insert
+		t_NewsDetail(infoId,content)
+		values(#{infoGuid},#{content})
+	</insert>
+
+	<!-- 获取抓取的信息内容 -->
+	<select id="selectInfo" parameterType="Integer" resultMap="NewsInfoResult">
+		select *,(select count(1) from t_NewsInfo ) total from t_NewsInfo
+		where categoryNum=#{categoryNum} limit #{pageIndex},#{pageSize}
+	</select>
+	
+	<!-- 获取详细页面内容，前台h5展示 -->
+	<select id="newsDetail" parameterType="NewsInfo" resultMap="NewsInfoResult">
+		select * from t_NewsInfo i,t_newsdetail d where i.infoGuid=d.infoId and d.infoId=#{infoGuid}
+	</select>
+	
+	<select id="isTitle" parameterType="String" resultType="Integer">
+	  select count(1) from t_NewsInfo where title=#{title}
+	</select>
+
+
+	<!-- admin begin -->
+	<!-- 获取新闻列表 -->
+	<select id="newsInfoList" parameterType="Map" resultMap="NewsInfoResult">
+		select * from t_NewsInfo n where n.title like "%"#{newsInfo.news.title}"%"  and #{newsInfo.endTime}>=n.infoDate and n.infoDate>#{newsInfo.startTime}
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取新闻总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select count(1) from t_NewsInfo n where n.title like "%"#{newsInfo.news.title}"%"  and #{newsInfo.endTime}>=n.infoDate and n.infoDate>#{newsInfo.startTime}
+	</select>
+
+	<!-- 获取新闻内容 -->
+	<select id="newsInfoContent" parameterType="Map" resultMap="NewsInfoResult">
+		select *
+		from t_NewsInfo n,t_newsdetail d WHERE n.infoguid=d.infoid and n.infoGuid=#{infoGuid}
+	</select>
+
+	<!-- 修改新闻 -->
+	<update id="newsInfoModify">
+		update t_NewsInfo set
+		title=#{title},url=#{url},zhuanZai=#{zhuanZai},author=#{author},categoryName=#{categoryName},infoDate=#{infoDate}
+		where infoGuid=#{infoGuid}
+	</update>
+	
+	<!-- 判断标题是否存在 -->
+	<select id="isExitTitle" parameterType="NewsInfo" resultType="Integer">
+	  select count(1) from t_NewsInfo where title=#{title}
+	</select>
+	
+	<!-- 批量删除新闻信息 -->
+	<delete id="newsInfoDelete" parameterType="NewsInfo" > 
+	  delete from t_NewsInfo where id=#{id}
+	</delete>
+</mapper> 

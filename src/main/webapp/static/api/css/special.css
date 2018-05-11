@@ -1,0 +1,197 @@
+@CHARSET "UTF-8";
+/**
+ * @个性化css
+ * @author：whai
+ * @version 1.0
+ */
+
+/*发送消息*/
+.userSendMsg-span {
+	padding-left: 10px;
+	height: 100px;
+	line-height: 100px;
+	vertical-align: text-bottom;
+}
+
+.userSendMsg-div {
+	margin: 30px;
+}
+
+.userSendMsg-txt {
+	height: 100px;
+}
+
+.userSendMsg-btn {
+	padding-left: 10px;
+	margin-left: 40px;
+}
+
+/*密码重置*/
+.resetPwd-div {
+	width: 80px;
+	text-align: right;
+	padding-right: 10px;
+	float: left;
+}
+
+.resetPwd-btn {
+	padding: 30px 0;
+	width: 180px;
+	text-align: right;
+}
+
+.resetClear{
+	clear:left;
+}
+.userSendMsg-div li{
+	line-height: 28px;
+	height: 28px;
+}
+/*回复反馈、投诉*/
+.feedBack-div {
+	margin: 10px 30px;
+}
+
+.feedBack-span {
+	padding-left: 10px;
+	height: 100px;
+	line-height: 100px;
+	vertical-align: text-bottom;
+	text-align: right;
+	margin-right: 20px;
+}
+
+.feedBack-span-input {
+	padding-left: 38px;
+	vertical-align: text-bottom;
+	text-align: right;
+	margin-right: 20px;
+}
+
+.feedBack-txt {
+	height: 100px;
+	line-height:100px;
+}
+
+.feedBack-input {
+	height: 30px;
+}
+
+.feedBack-div a {
+	padding-left: 10px;
+	margin: 10px 0px 30px 80px;
+}
+
+/*信息抓取配置*/
+.urlcode {
+	float: left;
+	padding-left: 5px;
+}
+
+#code-span {
+	float: left;
+}
+
+#categoryNum {
+	float: left;
+}
+
+.captureInfo-div {
+	margin: 10px 30px;
+}
+
+.captureInfo-div a {
+	padding-left: 40px;
+	margin: 40px 0px 30px 80px;
+}
+
+/*小区修改*/
+.xiaoqu{
+	float:left;
+	text-align: right;
+	margin-right: 20px;
+	width:47px;
+}
+
+.xiaoqu-div {
+	margin: 10px 30px;
+	padding-top:10px;
+	clear:both;
+}
+
+.xiaoqu-div select{
+	width: 100px;
+}
+
+.xiaoqu-input{
+	float:left;
+	margin-left:35px;
+}
+
+.feedBack-span-code{
+	float:left;
+}
+
+/*投票修改*/
+.vote-span{
+	float:left;
+	text-align: right;
+	margin-right: 20px;
+	width:100px;
+}
+
+.vote-div {
+	margin: 10px 30px;
+	padding-top:10px;
+	clear:both;
+}
+
+.vote-div select{
+	width: 100px;
+}
+.voteStatic{
+	margin:0 auto; 
+	text-align: center;
+	font-size: 28px !important;
+	font-weight: bolder;
+	height:50px;
+}
+
+/*新闻发布*/
+.news-span{
+	float:left;
+	text-align: right;
+	margin-right: 20px;
+	
+}
+
+.news-div {
+	margin: 10px 30px;
+	padding-top:10px;
+	clear:both;
+}
+
+.news-div-left {
+	margin: 10px 30px;
+	padding-top:10px;
+	float:left;
+}
+.news-div select{
+	width: 100px;
+}
+
+.clearDiv{
+	clear:both;
+}
+.newsStatic{
+	margin:0 auto; 
+	text-align: center;
+	font-size: 28px !important;
+	font-weight: bolder;
+	height:50px;
+}
+.news-input-title{
+	
+	width:426px;
+}
+

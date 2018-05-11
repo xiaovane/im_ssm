@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.vote.dao.VoteDao">
+
+	<resultMap type="VoteInfo" id="VoteInfoResult">
+		<id property="id" column="id" />
+		<result property="voteId" column="voteId" />
+		<result property="choiceId" column="choiceId" />
+		<result property="userId" column="userId" />
+		<result property="voteNum" column="voteNum" />
+		<result property="num" column="num" />
+	</resultMap>
+
+
+	<!-- api begin -->
+	<!-- 创建投票选项 -->
+	<insert id="addVoteInfo" parameterType="VoteInfo">
+		insert into
+		t_vote_info(choiceId,userId) values(#{choiceId},#{userId});
+	</insert>
+
+	<!-- 获取投票选项的统计 -->
+	<select id="voteStatistics" parameterType="VoteInfo" resultMap="VoteInfoResult">
+		SELECT m.choiceid,m.choicevalue,SUM(m.voteNum) num from (select
+		c.choiceid,c.choicevalue,i.votenum,i.voteid from t_vote_choice c,
+		t_vote_info i where c.choiceid=i.choiceid) m where m.voteId=#{voteId}
+		GROUP BY m.choiceId,m.choicevalue ORDER BY num desc
+	</select>
+
+	<!-- 判断是否已经投票过 -->
+	<select id="selectVoteInfoIs" parameterType="VoteInfo"
+		resultMap="VoteInfoResult">
+		select count(1) from t_voteInfo where userId=#{userId} and
+		voteId=#{userId}
+	</select>
+
+	<!-- admin begin -->
+	<!-- 获取投票选项的统计 -->
+	<select id="voteItemStatic" parameterType="VoteInfo" resultMap="VoteInfoResult">
+		SELECT m.choiceid,m.choicevalue,SUM(m.voteNum) num from (select
+		c.choiceid,c.choicevalue,i.votenum,i.voteid from t_vote_choice c,
+		t_vote_info i where c.choiceid=i.choiceid) m where
+		m.voteId=#{voteItemStatic.voteId}
+		GROUP BY m.choiceId,m.choicevalue
+		ORDER BY num desc
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取投票统计，然后并判断是否可以投票最高者进入下群 -->
+	<select id="resultStatic" parameterType="VoteInfo" resultMap="VoteInfoResult">
+		SELECT m.choiceid,m.choicevalue,m.voteid,m.groupid,SUM(m.voteNum) num
+		from (select
+		c.choiceid,c.choicevalue,i.votenum,i.voteid,v.groupid from
+		t_vote_choice c,
+		t_vote_info i,t_vote v where c.choiceid=i.choiceid and
+		v.voteid=i.voteid and now()>v.endtime
+		AND date_sub(v.endtime,interval
+		-3 day)>NOW()) m where m.voteId=#{voteId}
+		GROUP BY
+		m.choiceId,m.choicevalue,m.voteid,m.groupid ORDER BY num desc
+	</select>
+</mapper> 

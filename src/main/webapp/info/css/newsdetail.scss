@@ -1,0 +1,27 @@
+$base-width: 10px;
+html {
+    background-color: #fff;
+}
+
+.topinfo {
+    background-color: #fff;
+    padding: $base-width;
+    border-bottom: 1px solid #e0e0e0;
+    h4 {
+        font-weight: 400;
+        min-height: 30px;
+    }
+    .otherinfo {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #666;
+        .bookicon {
+            display: inline-block;
+            background: url(../images/img-book.png);
+            background-size: 100% 100%;
+            width: 12px;
+            height: 12px;
+        }
+    }
+}

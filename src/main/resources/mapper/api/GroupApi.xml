@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.GroupApiDao">
+	<resultMap type="GroupInfo" id="GroupInfoResult">
+		<id property="id" column="id" />
+		<result property="groupId" column="groupId" />
+		<result property="groupImage" column="groupImage" />
+		<result property="groupNickName" column="groupNickName" />
+		<result property="createName" column="createName" />
+		<result property="peopleNum" column="peopleNum" />
+		<result property="groupLevel" column="groupLevel" />
+		<result property="groupSize" column="groupSize" />
+		<result property="createTime" column="createTime" />
+		<result property="status" column="status" />
+		<result property="description" column="description" />
+		<result property="isAdmin" column="isAdmin" />
+
+	</resultMap>
+	<!-- api begin -->
+	<!-- 创建群组 -->
+	<insert id="creatGroup" parameterType="GroupInfo">
+		insert into
+		t_groupinfo(groupId,groupNickName,groupImage,createName,peopleNum,groupLevel,groupSize,createTime,description,isAdmin)
+		VALUES
+		(#{groupId},#{groupNickName},#{groupImage},#{createName},#{peopleNum},#{groupLevel},#{groupSize},#{createTime},#{description},#{isAdmin})
+	</insert>
+
+	<!-- 删除群组 -->
+	<delete id="deleteGroup" parameterType="GroupInfo">
+		delete from
+		t_groupinfo
+		where groupId=#{groupId}
+	</delete>
+
+	<!-- 修改群组 -->
+	<update id="modifyGroup" parameterType="GroupInfo">
+		update
+		t_groupinfo set
+		groupNickName=#{groupNickName},groupImage=#{groupImage},groupNickName=#{groupNickName},description=#{description},groupSize=#{groupSize}
+		<where>
+			groupId=#{groupId}
+		</where>
+	</update>
+	<!-- 判断用户id和群组id是否重复 -->
+	<select id="isLikeUser" parameterType="GroupInfo" resultType="Integer">
+		select count(1) from t_userInfo where userId=#{groupId}
+	</select>
+	<!-- 判断群组id是否存在 -->
+	<select id="isLikeGroup" parameterType="GroupInfo" resultType="Integer">
+		select count(1) from t_groupinfo where groupId=#{groupId}
+	</select>
+
+	<!-- 判断业委会群、楼群、本单元群是否存在 -->
+	<select id="isExistGroupYwh" parameterType="String" resultType="Integer">
+		select count(1) from t_groupinfo where groupNickName=#{groupNickName}
+	</select>
+
+	<!-- 根据nickName获取群id -->
+	<select id="getGroupIdByName" parameterType="String" resultType="String">
+		select groupId from t_groupinfo where groupNickName=#{groupNickName}
+	</select>
+
+	<!-- groupId获取群详细信息 -->
+	<select id="getDetailGroup" parameterType="String" resultMap="GroupInfoResult">
+		select * from t_groupinfo g ,t_group_group gg where
+		g.groupId=gg.groupId and g.groupId=#{groupId}
+	</select>
+
+	<!-- 根据userId获取群 -->
+	<select id="getGroupInfoList" parameterType="String" resultType="GroupInfo">
+		SELECT gu.status isVote,g.* from t_groupinfo g,t_group_users gu where
+		g.groupid=gu.groupid and gu.userid=#{userId}
+	</select>
+	
+	<!-- 根据userId获取系统群 -->
+	<select id="getAdminGroupList" parameterType="String" resultType="GroupInfo">
+		SELECT gu.status isVote,g.* from t_groupinfo g,t_group_users gu where
+		g.groupid=gu.groupid and gu.userid=#{userId} and g.groupNickName like "%群"
+	</select>
+	
+	<!-- 根据groupId获取群 -->
+	<select id="getAdminGroupDetail" parameterType="String" resultType="GroupInfo">
+		SELECT g.* from t_groupinfo g where  g.groupId=#{groupId} 
+	</select>
+
+	<!-- admin begin -->
+	<!-- 获取群组相关信息列表,分页 -->
+	<select id="listGroupInfo" parameterType="Map" resultMap="GroupInfoResult">
+		select *,CASE status
+		when 0 then '禁用'
+		when 1 then '启用'
+		END groupStatus,
+		CASE groupLevel
+		when 2 then '本单元群'
+		when 3 then '楼群'
+		when 4 then '小区成员群'
+		when 5 then '单元长群'
+		when 6 then '楼长群'
+		when 7 then '业委会群'
+		when 1 then '普通群'
+		END groupLev
+		from t_groupInfo where
+
+		groupId like
+		"%"#{groupInfo.groupId}"%"
+
+		and groupNickName like
+		"%"#{groupInfo.groupNickName}"%"
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取群组的总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select
+		count(1) from t_groupInfo where
+		groupId like "%"#{groupInfo.groupId}"%"
+
+		and groupNickName like "%"#{groupInfo.groupNickName}"%"
+
+	</select>
+</mapper> 

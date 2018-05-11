@@ -1,0 +1,154 @@
+/*
+作者：高琰洁
+创建时间: 2017/08/26
+版本: [1.0, 2017/08/03 ]
+版权: 江苏国泰新点软件有限公司
+描述： 太仓  新闻中心
+*/
+
+body {
+    background: #fff;
+}
+
+.header {
+    height: 1.173333rem/* 88/75 */
+    ;
+    line-height: 1.173333rem/* 88/75 */
+    ;
+    background: #efeff4;
+    color: #999;
+    border-top: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+    font-size: .373333rem/* 28/75 */
+    ;
+    padding-left: .373333rem/* 28/75 */
+    ;
+}
+
+.mui-slider-indicator {
+    text-align: right;
+}
+
+.mui-slider-title {
+    color: #fff;
+    opacity: 1;
+    padding-right: 20%;
+}
+
+.intro {
+    font-size: .426667rem/* 32/75 */
+    ;
+    padding: .266667rem/* 20/75 */
+    ;
+    color: #707070;
+    border-bottom: 1px solid #d9d9d9;
+    line-height: .6rem/* 45/75 */
+    ;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    /*控制行数*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-all;
+    min-height: 3.333333rem/* 250/75 */
+    ;
+}
+
+.video-news {
+    padding-top: .266667rem/* 20/75 */
+    ;
+    padding-left: .266667rem/* 20/75 */
+    ;
+    background: #fff;
+}
+
+.video-news-li {
+    width: 50%;
+    float: left;
+    padding-right: .266667rem/* 20/75 */
+    ;
+    padding-bottom: .266667rem/* 20/75 */
+    ;
+    position: relative;
+}
+
+.video-news-li img {
+    width: 4.4rem/* 330/75 */
+    ;
+    height: 2.533333rem/* 190/75 */
+    ;
+}
+
+.video-name {
+    text-align: center;
+    color: #666;
+    font-size: .4rem/* 30/75 */
+    ;
+    width: 80%;
+    margin-left: 10%;
+}
+
+.video-news-li .cover {
+    position: absolute;
+    background: url("../images/video-cover.png");
+    background-size: contain;
+    z-index: 1;
+    width: 4.4rem/* 330/75 */
+    ;
+    height: 2.533333rem/* 190/75 */
+    ;
+}
+
+.icons {
+    padding: .266667rem/* 20/75 */
+    .266667rem/* 20/75 */
+    0 0;
+}
+
+.icon {
+    padding: 0 0 .266667rem/* 20/75 */
+    .266667rem/* 20/75 */
+    ;
+    width: 50%;
+    text-align: center;
+    float: left;
+}
+
+.icon img {
+    width: 1.733333rem/* 130/75 */
+    ;
+    height: 1.733333rem/* 130/75 */
+    ;
+}
+
+.icon-name {
+    font-size: .4rem/* 30/75 */
+    ;
+}
+
+.data-list {
+    background-color: #fff;
+    padding-left: 10px;
+}
+
+.data-list li {
+    padding: .266667rem/* 20/75 */
+    ;
+    padding-left: 0;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    /*display: flex;*/
+}
+
+.msg-title {
+    font-size: .453333rem/* 34/75 */
+    ;
+    font-weight: normal;
+}
+
+.msg-date {
+    font-size: .4rem/* 30/75 */
+    ;
+    color: #999;
+}

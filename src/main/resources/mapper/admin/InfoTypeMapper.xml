@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin.dao.InfoTypeDao">
+    <resultMap id="InfoTypeResult" type="InfoType">
+        <id property="id" column="id" />
+        <result property="typeName" column="typeName"/>
+        <result property="orderNum" column="orderNum"/>
+        <result property="WebUserCount" column="WebUserCount"/>
+    </resultMap>
+
+    <insert id="addInfoType" parameterType="InfoType" keyProperty="id" useGeneratedKeys="true">
+        insert into db_WebUser.t_InfoType(typeName,orderNum) values(#{typeName},#{orderNum})
+       <!-- <trim prefix="(" suffix=")" suffixOverrides=",">
+
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="typeName!=null and typeName!=''">
+                #{typeName},
+            </if>
+            <if test="orderNum!=null and orderNum!=''">
+                #{orderNum},
+            </if>
+        </trim> -->
+    </insert>
+    <delete id="deleteInfoType" parameterType="java.lang.Integer">
+        DELETE FROM db_WebUser.t_InfoType where id=#{id}
+    </delete>
+    <update id="updateInfoType" parameterType="InfoType">
+        update db_WebUser.t_InfoType
+        <set >
+            <if test="typeName!=null and typeName!=''">
+                typeName = #{typeName},
+            </if>
+            <if test="orderNum!=null and orderNum!=''">
+                orderNum = #{orderNum},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="getById" parameterType="java.lang.Integer" resultMap="InfoTypeResult" >
+        SELECT id,typeName,orderNum from db_WebUser.t_InfoType
+            where id = #{id}
+    </select>
+    <select id="listByPage" resultMap="InfoTypeResult">
+       SELECT id,typeName,orderNum from db_WebUser.t_InfoType
+           limit #{start} ,#{end}
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        SELECT COUNT(id) from db_WebUser.t_InfoType
+    </select>
+    <select id="getInfoTypeData" resultMap="InfoTypeResult">
+        <!-- SELECT
+        t2.*,
+        COUNT(t1.id) AS WebUserCount
+        FROM
+        t_WebUser t1
+        RIGHT JOIN t_InfoType t2
+        ON t1.type_id = t2.id
+        GROUP BY t2.typeName
+        ORDER BY t2.orderNum -->
+        
+        SELECT               COUNT(t1.id) AS WebUserCount         FROM         t_WebUser t1         RIGHT JOIN t_InfoType t2         ON t1.type_id = t2.id         GROUP BY t2.typeName  
+    </select>
+
+</mapper>

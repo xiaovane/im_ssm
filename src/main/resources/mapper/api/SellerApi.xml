@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.card.dao.CardDao">
+
+	<resultMap type="SellerCard" id="SellerCardResult">
+		<id property="id" column="id"/>
+		<result property="userId" column="userId"/>
+		<result property="cardId" column="cardId"/>
+		<result property="sellerId" column="sellerId"/>
+		<result property="pwd" column="pwd"/>
+		
+	</resultMap>
+	
+	<!-- 往数据库中插入扫码记录 -->
+	<insert id="insertSellerCard" parameterType="SellerCard">
+	  insert into t_seller_users(userId,cardId,sellerId,pwd) values(#{userId},#{cardId},#{sellerId},#{pwd})
+	</insert>
+</mapper> 

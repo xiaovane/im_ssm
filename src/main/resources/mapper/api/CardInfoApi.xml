@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.card.dao.CardInfoDao">
+
+	<resultMap type="CardInfo" id="CardInfoResult">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="num" column="num" />
+		<result property="startTime" column="startTime" />
+		<result property="cardId" column="cardId" />
+		<result property="status" column="status" />
+	</resultMap>
+	<!-- api begin -->
+	<!-- 查看是否已经领取过卡券 -->
+	<select id="selectCardInfo" parameterType="CardInfo" resultType="Integer">
+		select count(1) from t_card_info where userId=#{userId} and
+		cardId=#{cardId} and status=1
+	</select>
+
+	<!-- 领取卡券 -->
+	<insert id="addUserCardInfo" parameterType="CardInfo">
+		insert into
+		t_card_info(userId,cardId) values(#{userId},#{cardId})
+	</insert>
+
+	<!-- 获取用户卡券列表 -->
+	<select id="cardInfoList" parameterType="Map" resultMap="CardInfoResult">
+		select
+		*,(select count(1) from t_card_info ) total, u.userId
+		companyId,u.nickName companyName from t_card_info
+		i,t_card c,t_userinfo u where
+		i.cardid=c.cardid and u.userId=c.userId and i.status=1 limit
+		#{pageIndex},#{pageSize}
+	</select>
+
+	<!-- 获取用户卡券详细页面 -->
+	<select id="cardInfoDetail" parameterType="CardInfo" resultMap="CardInfoResult">
+		select * from t_card_info a inner join t_card b on a.cardId=b.cardId
+		where a.userId=#{userId} and a.cardId=#{cardId} and a.status=1
+	</select>
+
+	<!-- 扫码卡券将状态置为0 -->
+	<update id="updateUserCard" parameterType="SellerCard">
+		update t_card_info set
+		status=0 where cardId=#{cardId} and userId=#{userId}
+	</update>
+	
+	<!-- 判断是否已经扫码过 -->
+	<select id="isScan" parameterType="SellerCard" resultType="InteGer">
+		select status from t_card_info  where cardId=#{cardId} and userId=#{userId}
+	</select>
+	
+	
+
+	<!-- admin begin -->
+	<!-- 获取用户卡券列表 -->
+	<select id="userCardInfoList" parameterType="Map" resultMap="CardInfoResult">
+		SELECT *,
+		CASE i.status WHEN 1 THEN '启用' WHEN 0 THEN '禁用' END
+		cardStatus, u.userId companyId,u.nickName companyName
+		from t_card_info
+		i,t_card c,t_userinfo u where
+		i.cardid=c.cardid and u.userId=c.userId
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+	
+	<!-- 获取总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		SELECT count(1)
+		from t_card_info
+		i,t_card c,t_userinfo u where
+		i.cardid=c.cardid and u.userId=c.userId		
+	</select>
+	<!-- 获取用户卡券详细 -->
+	<select id="userCardInfoDetail" parameterType="CardInfo"
+		resultMap="CardInfoResult">
+		SELECT *,
+		CASE i.status WHEN 1 THEN '启用' WHEN 0 THEN '禁用' END
+		cardStatus
+		from t_card_info i,t_card c,t_userinfo u where
+		i.cardid=c.cardid and u.userId=c.userId where i.cardId=#{cardId}
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+	<!-- 修改用户卡券 -->
+	<select id="userCardInfoModify" parameterType="CardInfo">
+		SELECT *,
+		CASE i.status WHEN 1 THEN '启用' WHEN 0 THEN '禁用' END
+		cardStatus
+		from t_card_info i,t_card c,t_userinfo u where
+		i.cardid=c.cardid and u.userId=c.userId where i.cardId=#{cardId}
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+	
+	<!-- 赠送好友卡券 -->
+	<update id="giveCardList" parameterType="Map">
+	  update t_card_info  set userId=#{friendId} where cardId=#{cardId} and userId=#{userId}
+	</update>
+</mapper> 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="api.user.dao.FriendApiDao">
+
+	<resultMap type="FeedBack" id="FeedBackResult">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="friendId" column="friendId" />
+		<result property="content" column="content" />
+		<result property="feedBackTime" column="feedBackTime" />
+		<result property="replyContent" column="replyContent" />
+		<result property="lookStatus" column="lookStatus" />
+		<result property="type" column="type" />
+		<result property="infoId" column="infoId" />
+
+	</resultMap>
+	<!-- api begin -->
+	<!-- 提交意见或者投诉 -->
+	<insert id="complainFriend" parameterType="FeedBack">
+		insert into
+		t_feedBack(userId,friendId,content,type,infoId,feedBackTime)
+		values(#{userId},#{friendId},#{content},#{type},#{infoId},#{feedBackTime})
+	</insert>
+
+	<!-- admin begin -->
+	<!-- 获取反馈、投诉信息列表 -->
+	<select id="listFeedBack" parameterType="Map" resultMap="FeedBackResult">
+		SELECT *,
+		CASE type
+		WHEN 0 THEN '投诉'
+		WHEN 1 THEN '反馈'
+		END feedBackType,
+		CASE lookStatus
+		WHEN 0 THEN '未回复'
+		WHEN 1 THEN '已回复'
+		END feedBackStatus
+		from t_feedback b,t_userinfo u where
+
+		u.userid=b.userid and
+
+		u.nickName
+		like
+		"%"#{feedBack.nickName}"%"
+
+		and b.type = #{feedBack.type}
+
+		<if test="start!=null and end!=null">
+			limit #{start},#{end}
+		</if>
+	</select>
+
+	<!-- 获取反馈、投诉信息总数 -->
+	<select id="getTotal" parameterType="Map" resultType="Long">
+		select
+		count(1) from t_feedback b ,t_userinfo u where
+
+		u.userid=b.userid
+		and
+		u.userid=b.userid and
+
+		u.nickName like
+		"%"#{feedBack.nickName}"%"
+
+		and
+		b.type=#{feedBack.type}
+	</select>
+	<!-- 获取反馈、投诉详细信息 -->
+	<select id="feedBackContent" parameterType="FeedBack" resultMap="FeedBackResult">
+		SELECT *,
+		CASE type
+		WHEN 0 THEN '投诉'
+		WHEN 1 THEN '反馈'
+		END feedBackType,
+		CASE lookStatus
+		WHEN 0 THEN '未回复'
+		WHEN 1 THEN '已回复'
+		END feedBackStatus
+		from t_feedback b,t_userinfo u
+		where b.userid=u.userid and
+		b.infoId=#{infoId}
+	</select>
+	<!-- 回复提交的投诉、反馈内容 -->
+	<update id="feedBackReply" parameterType="FeedBack">
+		update
+		t_feedback set
+		replyContent=#{replyContent},lookStatus=1 where
+		infoId=#{infoId}
+	</update>
+
+</mapper> 
